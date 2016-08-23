@@ -77,6 +77,19 @@ from the start."
      (format "\[%s\]" path))))
 
 ;;;###autoload
+(defun org-emms-insert-link (arg)
+  "Insert org link using completion.
+Prompt for a file name and link description. With a prefix ARG, prompt
+for a track position."
+  (interactive "P")
+  (let ((file (read-file-name "File: ")))
+    (if arg
+	(let ((tp (read-string "Track position (hh:mm:ss): ")))
+	  (insert (format "[[emms:%s::%s][%s]]" file tp tp)))
+      (let ((desc (read-string "Description: ")))
+	(insert (format "[[emms:%s][%s]]" file desc))))))
+
+;;;###autoload
 (defun org-emms-insert-track ()
   "Insert current selected track as an org link."
   (interactive)
@@ -96,11 +109,11 @@ from the start."
 	 (hh (/ emms-playing-time 3600))
 	 (mm (/ emms-playing-time 60))
 	 (ss (% emms-playing-time 60))
-	 (ts (format "%02d:%02d:%02d" hh mm ss)))
+	 (tp (format "%02d:%02d:%02d" hh mm ss)))
     (insert
      (if (eq major-mode 'org-mode)
-	 (format "[[emms:%s::%s][%s]]" file ts ts)
-       (format "[%s]" ts)))))
+	 (format "[[emms:%s::%s][%s]]" file tp tp)
+       (format "[%s]" tp)))))
 
 (provide 'org-emms)
 ;;; org-emms.el ends here
