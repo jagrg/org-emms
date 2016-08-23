@@ -36,7 +36,6 @@
 ;;; Code:
 
 (require 'org)
-(require 's)
 (require 'emms)
 (require 'emms-playing-time)
 
@@ -61,7 +60,7 @@
   "Play multimedia FILE from org-mode.
 If link contains a track position, start there. Otherwise, playback
 from the start."
-  (let* ((path (s-split "::" file))
+  (let* ((path (split-string file "::"))
 	 (track (car path))
 	 (time (org-emms-time-string-to-seconds (cadr path))))
     (emms-play-file track)
