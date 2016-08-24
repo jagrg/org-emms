@@ -22,11 +22,13 @@
 
 ;; This package provides basic emms support for org-mode. It adds a
 ;; new org link type to the list of `org-link-types', which can be
-;; used to playback multimedia files from an org file. If the link
-;; contains a track position, playback will start at that position.
-;; For example:
+;; used to playback multimedia files in org-mode. If the link contains
+;; a track position, playback will start at that position. For
+;; example:
 
-;; [[emms:../path/to/audio.mp3::00:21:43]] Playback starts at 21 min 43 sec.
+;; [[emms:/path/to/audio.mp3::2:43]]     Starts playback at 2 min 43 sec.
+;; [[emms:/path/to/audio.mp3::1:10:45]]  Starts playback at 1 hr 10 min 45 sec.
+;; [[emms:/path/to/audio.mp3::49]]       Starts playback at 0 min 49 sec.
 
 ;; The two main commands are `org-emms-insert-track' and
 ;; `org-emms-insert-track-position'.
