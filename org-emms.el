@@ -41,6 +41,10 @@
 (require 'emms)
 (require 'emms-playing-time)
 
+(defcustom org-emms-default-directory nil
+  "A directory where multimedia files are stored."
+  :type 'directory)
+
 (defun org-emms-time-string-to-seconds (s)
   "Convert a string HH:MM:SS to a number of seconds."
   (cond
@@ -65,6 +69,7 @@ from the start."
   (let* ((path (split-string file "::"))
 	 (track (car path))
 	 (time (org-emms-time-string-to-seconds (cadr path))))
+    ;; (mapc 'emms-add-playlist-file (list track))
     (emms-play-file track)
     (when time
       (emms-seek-to time))))
@@ -83,12 +88,15 @@ from the start."
 Prompt for a file name and link description. With a prefix ARG, prompt
 for a track position."
   (interactive "P")
-  (let ((file (read-file-name "File: ")))
+  (let ((file (read-file-name "File: " org-emms-default-directory)))
     (if arg
 	(let ((tp (read-string "Track position (hh:mm:ss): ")))
 	  (insert (format "[[emms:%s::%s][%s]]" (file-relative-name file) tp tp)))
       (let ((desc (read-string "Description: ")))
-	(insert (format "[[emms:%s][%s]]" (file-relative-name file) desc))))))
+	(insert
+	 (if (equal desc "")
+	     (format "[[emms:%s]]" (file-relative-name file) desc)
+	   (format "[[emms:%s][%s]]" (file-relative-name file) desc)))))))
 
 ;;;###autoload
 (defun org-emms-insert-track ()
