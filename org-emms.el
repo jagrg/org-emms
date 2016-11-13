@@ -74,13 +74,12 @@ from the start."
     (when time
       (emms-seek-to time))))
 
-(org-add-link-type
+(org-link-set-parameters
  "emms"
- 'org-emms-play
- (lambda (path desc format)
-   (if desc
-       (format "\[%s\]" desc)
-     (format "\[%s\]" path))))
+ :export (lambda (path desc format)
+	   (if desc
+	       (format "\[%s\]" desc)
+	     (format "\[%s\]" path))))
 
 ;;;###autoload
 (defun org-emms-insert-link (arg)
