@@ -76,10 +76,11 @@ from the start."
 
 (org-link-set-parameters
  "emms"
+ :follow (lambda (path) (org-emms-play path))
  :export (lambda (path desc format)
 	   (if desc
-	       (format "\[%s\]" desc)
-	     (format "\[%s\]" path))))
+	       (format "" desc)
+	     (format "" path))))
 
 ;;;###autoload
 (defun org-emms-insert-link (arg)
@@ -113,7 +114,7 @@ for a track position."
   "Insert current track position as an org link."
   (interactive)
   (let* ((track (emms-playlist-current-selected-track))
-	 (file (file-relative-name (emms-track-name track)))
+	 (file (emms-track-name track))
 	 (hh (/ emms-playing-time 3600))
 	 (mm (/ emms-playing-time 60))
 	 (ss (% emms-playing-time 60))
