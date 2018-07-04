@@ -41,9 +41,15 @@
 (require 'emms)
 (require 'emms-playing-time)
 
+(defgroup org-emms nil
+  "Connection between EMMS and `org-mode'."
+  :prefix "org-emms-"
+  :group 'multimedia)
+
 (defcustom org-emms-default-directory nil
   "A directory where multimedia files are stored."
-  :type 'directory)
+  :type 'directory
+  :group 'org-emms)
 
 (defun org-emms-time-string-to-seconds (s)
   "Convert a string HH:MM:SS to a number of seconds."
