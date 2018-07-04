@@ -33,6 +33,10 @@
 ;; The two main commands are `org-emms-insert-track' and
 ;; `org-emms-insert-track-position'.
 
+;; Also you can make a usual org link (with `org-store-link' command)
+;; from EMMS playlist and browser buffers, and then insert it into an
+;; org-mode buffer (with `org-insert-link' command).
+
 ;; See also: http://orgmode.org/worg/code/elisp/org-player.el
 
 ;;; Code:
@@ -100,10 +104,32 @@ from the start."
 (org-link-set-parameters
  "emms"
  :follow #'org-emms-play
+ :store #'org-emms-store-link
  :export (lambda (path desc format)
 	   (if desc
 	       (format "" desc)
 	     (format "" path))))
+
+(defun org-emms-make-link ()
+  "Return org link for the the current EMMS track.
+The return value is a cons cell (link . description)."
+  (let ((track (emms-playlist-current-selected-track)))
+    (cons (concat "emms:" (emms-track-name track)
+                  (and (/= 0 emms-playing-time)
+                       (concat "::"
+                               (format-seconds org-emms-time-format
+                                               emms-playing-time))))
+          (emms-info-track-description track))))
+
+(defun org-emms-store-link ()
+  "Store org link for the current playing file in EMMS."
+  (when (derived-mode-p 'emms-playlist-mode
+                        'emms-browser-mode)
+    (let ((link (org-emms-make-link)))
+      (org-store-link-props
+       :type        "emms"
+       :link        (car link)
+       :description (cdr link)))))
 
 ;;;###autoload
 (defun org-emms-insert-link (arg)
