@@ -92,13 +92,19 @@ This string is passed to `format-seconds' function."
 If link contains a track position, start there. Otherwise, playback
 from the start."
   (let* ((path (split-string file "::"))
-	 (track (car path))
+	 (file (expand-file-name (car path)))
 	 (time (org-emms-time-string-to-seconds (cadr path))))
-    ;; (mapc 'emms-add-playlist-file (list track))
-    (emms-play-file track)
+    ;; Do not start a track again (just seek to time) if we want to open
+    ;; a link with the currently playing track.
+    (unless (and emms-player-playing-p
+                 (string= file
+                          (emms-track-name
+                           (emms-playlist-current-selected-track))))
+      (emms-play-file file)
+      (and time
+           (> org-emms-delay 0)
+           (sleep-for org-emms-delay)))
     (when time
-      (when (> org-emms-delay 0)
-        (sleep-for org-emms-delay))
       (emms-seek-to time))))
 
 (org-link-set-parameters
