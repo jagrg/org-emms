@@ -93,7 +93,7 @@ from the start."
 
 (org-link-set-parameters
  "emms"
- :follow (lambda (path) (org-emms-play path))
+ :follow #'org-emms-play
  :export (lambda (path desc format)
 	   (if desc
 	       (format "" desc)
