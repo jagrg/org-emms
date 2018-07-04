@@ -51,6 +51,15 @@
   :type 'directory
   :group 'org-emms)
 
+(defcustom org-emms-delay 0
+  "Time in seconds between starting playing and seeking to time.
+If your org link has a track position, but the EMMS player does
+not start playing at that position, most likely the problem is
+that it starts seeking before the player starts playing.  If this
+is your case, set this variable to 1 or 2 seconds."
+  :type 'integer
+  :group 'org-emms)
+
 (defun org-emms-time-string-to-seconds (s)
   "Convert a string HH:MM:SS to a number of seconds."
   (cond
@@ -78,6 +87,8 @@ from the start."
     ;; (mapc 'emms-add-playlist-file (list track))
     (emms-play-file track)
     (when time
+      (when (> org-emms-delay 0)
+        (sleep-for org-emms-delay))
       (emms-seek-to time))))
 
 (org-link-set-parameters
