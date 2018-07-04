@@ -33,6 +33,10 @@
 ;; The two main commands are `org-emms-insert-track' and
 ;; `org-emms-insert-track-position'.
 
+;; Also you can make a usual org link (with `org-store-link' command)
+;; from EMMS playlist and browser buffers, and then insert it into an
+;; org-mode buffer (with `org-insert-link' command).
+
 ;; See also: http://orgmode.org/worg/code/elisp/org-player.el
 
 ;;; Code:
@@ -41,9 +45,30 @@
 (require 'emms)
 (require 'emms-playing-time)
 
+(defgroup org-emms nil
+  "Connection between EMMS and `org-mode'."
+  :prefix "org-emms-"
+  :group 'multimedia)
+
 (defcustom org-emms-default-directory nil
   "A directory where multimedia files are stored."
-  :type 'directory)
+  :type 'directory
+  :group 'org-emms)
+
+(defcustom org-emms-delay 0
+  "Time in seconds between starting playing and seeking to time.
+If your org link has a track position, but the EMMS player does
+not start playing at that position, most likely the problem is
+that it starts seeking before the player starts playing.  If this
+is your case, set this variable to 1 or 2 seconds."
+  :type 'integer
+  :group 'org-emms)
+
+(defcustom org-emms-time-format "%.2h:%.2m:%.2s"
+  "Format string for a track position in org links.
+This string is passed to `format-seconds' function."
+  :type 'string
+  :group 'org-emms)
 
 (defun org-emms-time-string-to-seconds (s)
   "Convert a string HH:MM:SS to a number of seconds."
@@ -67,20 +92,50 @@
 If link contains a track position, start there. Otherwise, playback
 from the start."
   (let* ((path (split-string file "::"))
-	 (track (car path))
+	 (file (expand-file-name (car path)))
 	 (time (org-emms-time-string-to-seconds (cadr path))))
-    ;; (mapc 'emms-add-playlist-file (list track))
-    (emms-play-file track)
+    ;; Do not start a track again (just seek to time) if we want to open
+    ;; a link with the currently playing track.
+    (unless (and emms-player-playing-p
+                 (string= file
+                          (emms-track-name
+                           (emms-playlist-current-selected-track))))
+      (emms-play-file file)
+      (and time
+           (> org-emms-delay 0)
+           (sleep-for org-emms-delay)))
     (when time
       (emms-seek-to time))))
 
 (org-link-set-parameters
  "emms"
- :follow (lambda (path) (org-emms-play path))
+ :follow #'org-emms-play
+ :store #'org-emms-store-link
  :export (lambda (path desc format)
 	   (if desc
 	       (format "" desc)
 	     (format "" path))))
+
+(defun org-emms-make-link ()
+  "Return org link for the the current EMMS track.
+The return value is a cons cell (link . description)."
+  (let ((track (emms-playlist-current-selected-track)))
+    (cons (concat "emms:" (emms-track-name track)
+                  (and (/= 0 emms-playing-time)
+                       (concat "::"
+                               (format-seconds org-emms-time-format
+                                               emms-playing-time))))
+          (emms-info-track-description track))))
+
+(defun org-emms-store-link ()
+  "Store org link for the current playing file in EMMS."
+  (when (derived-mode-p 'emms-playlist-mode
+                        'emms-browser-mode)
+    (let ((link (org-emms-make-link)))
+      (org-store-link-props
+       :type        "emms"
+       :link        (car link)
+       :description (cdr link)))))
 
 ;;;###autoload
 (defun org-emms-insert-link (arg)
@@ -115,10 +170,7 @@ for a track position."
   (interactive)
   (let* ((track (emms-playlist-current-selected-track))
 	 (file (emms-track-name track))
-	 (hh (/ emms-playing-time 3600))
-	 (mm (/ emms-playing-time 60))
-	 (ss (% emms-playing-time 60))
-	 (tp (format "%02d:%02d:%02d" hh mm ss)))
+	 (tp (format-seconds org-emms-time-format emms-playing-time)))
     (insert
      (if (eq major-mode 'org-mode)
 	 (format "[[emms:%s::%s][%s]]" file tp tp)
