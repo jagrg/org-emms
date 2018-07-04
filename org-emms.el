@@ -60,6 +60,12 @@ is your case, set this variable to 1 or 2 seconds."
   :type 'integer
   :group 'org-emms)
 
+(defcustom org-emms-time-format "%.2h:%.2m:%.2s"
+  "Format string for a track position in org links.
+This string is passed to `format-seconds' function."
+  :type 'string
+  :group 'org-emms)
+
 (defun org-emms-time-string-to-seconds (s)
   "Convert a string HH:MM:SS to a number of seconds."
   (cond
@@ -132,10 +138,7 @@ for a track position."
   (interactive)
   (let* ((track (emms-playlist-current-selected-track))
 	 (file (emms-track-name track))
-	 (hh (/ emms-playing-time 3600))
-	 (mm (/ emms-playing-time 60))
-	 (ss (% emms-playing-time 60))
-	 (tp (format "%02d:%02d:%02d" hh mm ss)))
+	 (tp (format-seconds org-emms-time-format emms-playing-time)))
     (insert
      (if (eq major-mode 'org-mode)
 	 (format "[[emms:%s::%s][%s]]" file tp tp)
