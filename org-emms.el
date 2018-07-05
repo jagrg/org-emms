@@ -3,7 +3,10 @@
 ;; Copyright (C) 2016  Jonathan Gregory
 
 ;; Author: Jonathan Gregory <jgrg at autistici dot org>
+;; Version: 0.1
+;; URL: https://github.com/jagrg/org-emms
 ;; Keywords: multimedia
+;; Package-Requires: ((emacs "24"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -178,4 +181,3 @@ for a track position."
 
 (provide 'org-emms)
 ;;; org-emms.el ends here
-;; test
