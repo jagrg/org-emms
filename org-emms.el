@@ -3,7 +3,10 @@
 ;; Copyright (C) 2016  Jonathan Gregory
 
 ;; Author: Jonathan Gregory <jgrg at autistici dot org>
+;; Version: 0.1
+;; URL: https://github.com/jagrg/org-emms
 ;; Keywords: multimedia
+;; Package-Requires: ((emacs "24"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,10 +23,10 @@
 
 ;;; Commentary:
 
-;; This package provides basic emms support for org-mode. It adds a
+;; This package provides basic emms support for org-mode.  It adds a
 ;; new org link type to the list of `org-link-types', which can be
-;; used to playback multimedia files in org-mode. If the link contains
-;; a track position, playback will start at that position. For
+;; used to playback multimedia files in org-mode.  If the link contains
+;; a track position, playback will start at that position.  For
 ;; example:
 
 ;; [[emms:/path/to/audio.mp3::2:43]]     Starts playback at 2 min 43 sec.
@@ -71,7 +74,7 @@ This string is passed to `format-seconds' function."
   :group 'org-emms)
 
 (defun org-emms-time-string-to-seconds (s)
-  "Convert a string HH:MM:SS to a number of seconds."
+  "Convert a string S (\"HH:MM:SS\") to a number of seconds."
   (cond
    ((and (stringp s)
          (string-match "\\([0-9]+\\):\\([0-9]+\\):\\([0-9]+\\)" s))
@@ -88,8 +91,8 @@ This string is passed to `format-seconds' function."
    (t s)))
 
 (defun org-emms-play (file)
-  "Play multimedia FILE from org-mode.
-If link contains a track position, start there. Otherwise, playback
+  "Play multimedia FILE from `org-mode'.
+If link contains a track position, start there.  Otherwise, playback
 from the start."
   (let* ((path (split-string file "::"))
 	 (file (expand-file-name (car path)))
@@ -140,7 +143,7 @@ The return value is a cons cell (link . description)."
 ;;;###autoload
 (defun org-emms-insert-link (arg)
   "Insert org link using completion.
-Prompt for a file name and link description. With a prefix ARG, prompt
+Prompt for a file name and link description.  With a prefix ARG, prompt
 for a track position."
   (interactive "P")
   (let ((file (read-file-name "File: " org-emms-default-directory)))
@@ -178,4 +181,3 @@ for a track position."
 
 (provide 'org-emms)
 ;;; org-emms.el ends here
-;; test
