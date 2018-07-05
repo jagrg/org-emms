@@ -113,11 +113,7 @@ from the start."
 (org-link-set-parameters
  "emms"
  :follow #'org-emms-play
- :store #'org-emms-store-link
- :export (lambda (path desc format)
-	   (if desc
-	       (format "" desc)
-	     (format "" path))))
+ :store #'org-emms-store-link)
 
 (defun org-emms-make-link ()
   "Return org link for the the current EMMS track.
