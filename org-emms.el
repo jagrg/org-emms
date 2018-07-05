@@ -1,6 +1,6 @@
 ;;; org-emms.el --- Play multimedia files from org-mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Jonathan Gregory
+;; Copyright (C) 2016-2018 Jonathan Gregory
 
 ;; Author: Jonathan Gregory <jgrg at autistici dot org>
 ;; Version: 0.1
