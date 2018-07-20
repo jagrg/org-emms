@@ -159,7 +159,7 @@ for a track position."
   (let* ((track (emms-playlist-current-selected-track))
 	 (file (emms-track-name track))
 	 (title (emms-track-get track 'info-title)))
-    (when (eq major-mode 'org-mode)
+    (when (derived-mode-p 'org-mode)
       (insert
        (format "[[emms:%s][%s]]" file title)))))
 
@@ -171,7 +171,7 @@ for a track position."
 	 (file (emms-track-name track))
 	 (tp (format-seconds org-emms-time-format emms-playing-time)))
     (insert
-     (if (eq major-mode 'org-mode)
+     (if (derived-mode-p 'org-mode)
 	 (format "[[emms:%s::%s][%s]]" file tp tp)
        (format "[%s]" tp)))))
 
