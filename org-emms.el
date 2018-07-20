@@ -74,21 +74,17 @@ This string is passed to `format-seconds' function."
   :group 'org-emms)
 
 (defun org-emms-time-string-to-seconds (s)
-  "Convert a string S (\"HH:MM:SS\") to a number of seconds."
-  (cond
-   ((and (stringp s)
-         (string-match "\\([0-9]+\\):\\([0-9]+\\):\\([0-9]+\\)" s))
-    (let ((hour (string-to-number (match-string 1 s)))
-          (min (string-to-number (match-string 2 s)))
-          (sec (string-to-number (match-string 3 s))))
-      (+ (* hour 3600) (* min 60) sec)))
-   ((and (stringp s)
-         (string-match "\\([0-9]+\\):\\([0-9]+\\)" s))
-    (let ((min (string-to-number (match-string 1 s)))
-          (sec (string-to-number (match-string 2 s))))
-      (+ (* min 60) sec)))
-   ((stringp s) (string-to-number s))
-   (t s)))
+  "Convert timestring S (\"HH:MM:SS\") to a number of seconds.
+Hours, minutes and leading zeros are optional."
+  (save-match-data
+    (if (stringp s)
+	(if (string-match "\\([0-9]\\{1,2\\}\\)?:?\\([0-9]\\{1,2\\\}\\):\\([0-9]\\{1,2\\}\\)" s)
+	    (let ((hh (if (match-beginning 1) (string-to-number (match-string 1 s)) 0))
+		  (mm (string-to-number (match-string 2 s)))
+		  (ss (string-to-number (match-string 3 s))))
+	      (+ (* hh 3600) (* mm 60) ss))
+	  (string-to-number s))
+      s)))
 
 (defun org-emms-play (file)
   "Play multimedia FILE from `org-mode'.
