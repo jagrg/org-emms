@@ -78,7 +78,7 @@ This string is passed to `format-seconds' function."
 Hours, minutes and leading zeros are optional."
   (save-match-data
     (if (stringp s)
-	(if (string-match "\\([0-9]\\{1,2\\}\\)?:?\\([0-9]\\{1,2\\\}\\):\\([0-9]\\{1,2\\}\\)" s)
+	(if (string-match "\\([0-9].\\)?:?\\([0-9]\\{1,2\\}\\):\\([0-9]\\{1,2\\}\\)" s)
 	    (let ((hh (if (match-beginning 1) (string-to-number (match-string 1 s)) 0))
 		  (mm (string-to-number (match-string 2 s)))
 		  (ss (string-to-number (match-string 3 s))))
