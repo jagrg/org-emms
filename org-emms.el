@@ -87,11 +87,11 @@ Hours, minutes and leading zeros are optional."
 	  (string-to-number s))
       s)))
 
-(defun org-emms-play (file)
-  "Play multimedia FILE from `org-mode'.
+(defun org-emms-play (path _arg)
+  "Play multimedia file at PATH from `org-mode'.
 If link contains a track position, start there.  Otherwise, playback
 from the start."
-  (let* ((path (split-string file "::"))
+  (let* ((path (split-string path "::"))
 	 (file (expand-file-name (car path)))
 	 (time (org-emms-time-string-to-seconds (cadr path))))
     ;; Do not start a track again (just seek to time) if we want to open
@@ -123,7 +123,7 @@ The return value is a cons cell (link . description)."
                                                emms-playing-time))))
           (emms-info-track-description track))))
 
-(defun org-emms-store-link ()
+(defun org-emms-store-link (&optional _interactive)
   "Store org link for the current playing file in EMMS."
   (when (derived-mode-p 'emms-playlist-mode
                         'emms-browser-mode)
