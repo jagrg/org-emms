@@ -79,12 +79,12 @@ This string is passed to `format-seconds' function."
 Hours, minutes and leading zeros are optional."
   (save-match-data
     (if (stringp s)
-	(if (string-match "\\([0-9]+:\\)?\\([0-9]+\\):\\([0-9]+\\)" s)
-	    (let ((hh (if (match-beginning 1) (string-to-number (match-string 1 s)) 0))
-		  (mm (string-to-number (match-string 2 s)))
-		  (ss (string-to-number (match-string 3 s))))
-	      (+ (* hh 3600) (* mm 60) ss))
-	  (string-to-number s))
+	    (if (string-match "\\([0-9]+:\\)?\\([0-9]+\\):\\([0-9]+\\)" s)
+	        (let ((hh (if (match-beginning 1) (string-to-number (match-string 1 s)) 0))
+		          (mm (string-to-number (match-string 2 s)))
+		          (ss (string-to-number (match-string 3 s))))
+	          (+ (* hh 3600) (* mm 60) ss))
+	      (string-to-number s))
       s)))
 
 (defun org-emms-play (path _arg)
@@ -92,8 +92,8 @@ Hours, minutes and leading zeros are optional."
 If PATH contains a track position, start there.  Otherwise, play
 from the beginning."
   (let* ((parts (split-string path "::"))
-	 (file (expand-file-name (car parts)))
-	 (time (org-emms-time-string-to-seconds (cadr parts))))
+	     (file (expand-file-name (car parts)))
+	     (time (org-emms-time-string-to-seconds (cadr parts))))
     ;; Do not start a track again (just seek to time) if we want to open
     ;; a link with the currently playing track.
     (unless (and emms-player-playing-p
@@ -142,21 +142,21 @@ for a track position."
   (interactive "P")
   (let ((file (read-file-name "File: " org-emms-default-directory)))
     (if arg
-	(let ((tp (read-string "Track position (hh:mm:ss): ")))
-	  (insert (format "[[emms:%s::%s][%s]]" (file-relative-name file) tp tp)))
+	    (let ((tp (read-string "Track position (hh:mm:ss): ")))
+	      (insert (format "[[emms:%s::%s][%s]]" (file-relative-name file) tp tp)))
       (let ((desc (read-string "Description: ")))
-	(insert
-	 (if (equal desc "")
-	     (format "[[emms:%s]]" (file-relative-name file))
-	   (format "[[emms:%s][%s]]" (file-relative-name file) desc)))))))
+	    (insert
+	     (if (equal desc "")
+	         (format "[[emms:%s]]" (file-relative-name file))
+	       (format "[[emms:%s][%s]]" (file-relative-name file) desc)))))))
 
 ;;;###autoload
 (defun org-emms-insert-track ()
   "Insert current selected track as an org link."
   (interactive)
   (let* ((track (emms-playlist-current-selected-track))
-	 (file (emms-track-name track))
-	 (title (emms-track-get track 'info-title)))
+	     (file (emms-track-name track))
+	     (title (emms-track-get track 'info-title)))
     (when (derived-mode-p 'org-mode)
       (insert
        (format "[[emms:%s][%s]]" file title)))))
@@ -166,11 +166,11 @@ for a track position."
   "Insert current track position as an org link."
   (interactive)
   (let* ((track (emms-playlist-current-selected-track))
-	 (file (emms-track-name track))
-	 (tp (format-seconds org-emms-time-format emms-playing-time)))
+	     (file (emms-track-name track))
+	     (tp (format-seconds org-emms-time-format emms-playing-time)))
     (insert
      (if (derived-mode-p 'org-mode)
-	 (format "[[emms:%s::%s][%s]]" file tp tp)
+	     (format "[[emms:%s::%s][%s]]" file tp tp)
        (format "[%s]" tp)))))
 
 (provide 'org-emms)
