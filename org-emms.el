@@ -47,7 +47,7 @@
 (require 'org)
 (require 'emms)
 (require 'emms-playing-time)
-(declare-function emms-play-file "ext:emms-source-file")
+(require 'emms-source-file)
 
 (defgroup org-emms nil
   "Connection between EMMS and `org-mode'."
