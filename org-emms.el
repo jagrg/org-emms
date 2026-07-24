@@ -87,25 +87,36 @@ Hours, minutes and leading zeros are optional."
 	      (string-to-number s))
       s)))
 
+(defun org-emms--seek-when-current (file seconds)
+  "Seek FILE to SECONDS when FILE is still the current track."
+  (let* ((track (emms-playlist-current-selected-track))
+	     (current-file (and track (emms-track-name track))))
+    (when (and current-file
+	           (file-equal-p file current-file))
+      (emms-seek-to seconds))))
+
 (defun org-emms-play (path _arg)
   "Follow the EMMS Org link specified by PATH.
 If PATH contains a track position, start there.  Otherwise, play
 from the beginning."
   (let* ((parts (split-string path "::"))
 	     (file (expand-file-name (car parts)))
-	     (time (org-emms-time-string-to-seconds (cadr parts))))
+	     (time (org-emms-time-string-to-seconds (cadr parts)))
+	     (track (emms-playlist-current-selected-track))
+	     (current-file (and track (emms-track-name track)))
+	     (current-p (and emms-player-playing-p
+			             current-file
+			             (file-equal-p file current-file))))
     ;; Do not start a track again (just seek to time) if we want to open
     ;; a link with the currently playing track.
-    (unless (and emms-player-playing-p
-                 (string= file
-                          (emms-track-name
-                           (emms-playlist-current-selected-track))))
-      (emms-play-file file)
-      (and time
-           (> org-emms-delay 0)
-           (sleep-for org-emms-delay)))
+    (unless current-p
+      (emms-play-file file))
     (when time
-      (emms-seek-to time))))
+      (if (and (not current-p)
+	           (> org-emms-delay 0))
+	      (run-at-time org-emms-delay nil
+		               #'org-emms--seek-when-current file time)
+	    (emms-seek-to time)))))
 
 (org-link-set-parameters
  "emms"
