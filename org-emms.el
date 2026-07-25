@@ -1,12 +1,12 @@
 ;;; org-emms.el --- Playback multimedia files from Org documents  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016-2023 Jonathan Gregory
+;; Copyright (C) 2016-2026 Jonathan Gregory
 
 ;; Author: Jonathan Gregory <jgrg at autistici dot org>
 ;; Version: 0.2
 ;; URL: https://git.sr.ht/~jagrg/org-emms
 ;; Keywords: multimedia
-;; Package-Requires: ((emacs "24.1") (org "9.3") (emms "0.0"))
+;; Package-Requires: ((emacs "24.4") (org "9.3") (emms "0.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'subr-x)
 (require 'emms)
 (require 'emms-playing-time)
 (require 'emms-source-file)
@@ -123,6 +124,17 @@ from the beginning."
  :follow #'org-emms-play
  :store #'org-emms-store-link)
 
+(defun org-emms--link-string (path &optional position description)
+  "Return an Org EMMS link for PATH.
+When POSITION is non-nil, append it to the link path.  Use DESCRIPTION
+as the Org link description."
+  (org-link-make-string
+   (concat "emms:"
+           path
+           (when position
+             (concat "::" position)))
+   description))
+
 (defun org-emms-make-link ()
   "Return org link for the the current EMMS track.
 The return value is a cons cell (link . description)."
@@ -151,15 +163,20 @@ _INTERACTIVE is accepted for compatibility with Org's link storage API."
 Prompt for a file name and link description.  With a prefix ARG, prompt
 for a track position."
   (interactive "P")
-  (let ((file (read-file-name "File: " org-emms-default-directory)))
+  (let* ((file (read-file-name "File: " org-emms-default-directory))
+         (path (file-relative-name file)))
     (if arg
-	    (let ((tp (read-string "Track position (hh:mm:ss): ")))
-	      (insert (format "[[emms:%s::%s][%s]]" (file-relative-name file) tp tp)))
-      (let ((desc (read-string "Description: ")))
+	    (let ((position (read-string "Track position (hh:mm:ss): ")))
+	      (when (string-empty-p position)
+	        (user-error "Track position cannot be empty"))
+	      (insert (org-emms--link-string path position position)))
+      (let ((description (read-string "Description: ")))
 	    (insert
-	     (if (equal desc "")
-	         (format "[[emms:%s]]" (file-relative-name file))
-	       (format "[[emms:%s][%s]]" (file-relative-name file) desc)))))))
+	     (org-emms--link-string
+	      path
+	      nil
+	      (unless (string-empty-p description)
+	        description)))))))
 
 ;;;###autoload
 (defun org-emms-insert-track ()
@@ -170,7 +187,7 @@ for a track position."
 	     (title (emms-track-get track 'info-title)))
     (when (derived-mode-p 'org-mode)
       (insert
-       (format "[[emms:%s][%s]]" file title)))))
+       (org-emms--link-string file nil title)))))
 
 ;;;###autoload
 (defun org-emms-insert-track-position ()
@@ -181,7 +198,7 @@ for a track position."
 	     (tp (format-seconds org-emms-time-format emms-playing-time)))
     (insert
      (if (derived-mode-p 'org-mode)
-	     (format "[[emms:%s::%s][%s]]" file tp tp)
+	     (org-emms--link-string file tp tp)
        (format "[%s]" tp)))))
 
 (provide 'org-emms)
