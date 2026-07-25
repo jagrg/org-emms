@@ -43,7 +43,7 @@
 
 ;;; Code:
 
-(require 'org)
+(require 'ol)
 (require 'subr-x)
 (require 'emms)
 (require 'emms-playing-time)
