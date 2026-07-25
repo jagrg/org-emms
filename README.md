@@ -2,10 +2,9 @@
 
 # org-emms
 
-This package provides a new org link type for playing back multimedia
-files from Org documents using EMMS, The Emacs Multimedia System. If
-the link contains a track position, playback will start at the
-specified position. For example:
+This package provides an Org link type for playing multimedia files
+with EMMS, The Emacs Multimedia System. If the link contains a track
+position, playback will start at the specified position. For example:
 
 ```
 [[emms:/path/to/audio.mp3::2:43]]     Starts playback at 2 min 43 sec.
@@ -13,19 +12,36 @@ specified position. For example:
 [[emms:/path/to/audio.mp3::49]]       Starts playback at 0 min 49 sec.
 ```
 
-The two main commands are `org-emms-insert-track` and
-`org-emms-insert-track-position`. The latter is especially useful for
-aligning text with audio when transcribing spoken language.
+This is particularly useful for transcription, language study, lecture
+notes, interviews, and any Org document that references specific
+positions in an audio or video file.
 
-It is also possible to make a usual org link (with `org-store-link`
-command) from EMMS playlist and browser buffers, and then insert it
-into an org-mode buffer (with `org-insert-link` command).
+Available commands include `org-emms-insert-link`,
+`org-emms-insert-track`, `org-emms-insert-track-position`
 
-### Support urls via emms-play-url (open issue from Jelle Licht)
+It is also possible to store an Org link from an EMMS playlist or
+browser buffer with `org-store-link`, then insert it into an Org
+buffer with `org-insert-link`.
 
-Does it make sense to have org-emms support urls as well? I currently
-hacked around things to support youtube videos in emms using MPV. If
-you think this is out of scope for org-emms, never mind.
+## Installation
 
-If you do think it makes sense, I could try to clean up my hacks using
-e.g. `cl-defgeneric`.
+Install `org-emms` from MELPA:
+
+```elisp
+M-x package-install RET org-emms RET
+```
+
+Then load it in your Emacs configuration:
+
+```elisp
+(require 'org-emms)
+```
+
+EMMS must also be installed and configured with a player that supports
+the media formats you intend to use.
+
+## URL support
+
+`org-emms` currently targets local multimedia files through
+`emms-play-file`. Support for URLs through `emms-play-url`, including
+services played through MPV, is being considered separately.
