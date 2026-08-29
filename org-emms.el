@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016-2026 Jonathan Gregory
 
-;; Author: Jonathan Gregory <jgrg at autistici dot org>
+;; Author: Jonathan Gregory <jagrg at posteo dot com>
 ;; Version: 0.2
 ;; URL: https://git.sr.ht/~jagrg/org-emms
 ;; Keywords: multimedia
